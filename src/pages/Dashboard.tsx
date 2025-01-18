@@ -1,11 +1,12 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { useParams } from 'react-router';
 import ExploreContainer from '../components/ExploreContainer';
-import './Page.css';
+import Response from '../components/Response';
+import './Dashboard.css';
 
-const Page: React.FC = () => {
+const Dashboard: React.FC = () => {
 
-  const { name } = useParams<{ name: string; }>();
+  const name = "Dashboard";
 
   return (
     <IonPage>
@@ -24,10 +25,10 @@ const Page: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name={name} />
+        <Response subject="Hello, World!" priority="high" scheduledSendTime="2022-01-01T00:00:00.000Z" />
       </IonContent>  
     </IonPage>
   );
 };
 
-export default Page;
+export default Dashboard;

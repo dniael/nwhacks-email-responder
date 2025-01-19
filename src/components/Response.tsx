@@ -1,14 +1,16 @@
 import React from 'react';
-import { IonItem, IonLabel, IonText, IonButton, IonIcon, IonDatetime } from '@ionic/react';
+import { IonItem, IonLabel, IonText, IonButton, IonIcon, IonDatetimeButton, IonDatetime, IonModal } from '@ionic/react';
 import { alertCircleOutline, alertOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import './Response.css';
 
 interface ResponseProps {
   subject: string;
+  response: string;
   priority: 'high' | 'medium' | 'low';
   scheduledSendTime: string;
 }
 
-const Response: React.FC<ResponseProps> = ({ subject, priority, scheduledSendTime }: ResponseProps) => {
+const Response: React.FC<ResponseProps> = ({ subject, response, priority, scheduledSendTime }: ResponseProps) => {
 
   const handleSend = () => {
     // Handle the send action here
@@ -31,11 +33,16 @@ const Response: React.FC<ResponseProps> = ({ subject, priority, scheduledSendTim
   };
 
   return (
-    <IonItem style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <IonItem className='response'>  
       <IonText>{subject}</IonText>
       {getPriorityIcon()}
-      <IonDatetime value={scheduledSendTime} disabled />
-      <IonButton onClick={handleSend}>Send</IonButton>
+      <IonDatetimeButton datetime="datetime"></IonDatetimeButton>
+
+      <IonModal keepContentsMounted={true}>
+        <IonDatetime id="datetime"></IonDatetime>
+      </IonModal>
+
+      {/* <IonButton onClick={handleSend}>Send</IonButton> */}
     </IonItem>
   );
 };

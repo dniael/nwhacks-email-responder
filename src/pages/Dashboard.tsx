@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <Response subject="Hello, World!" priority="high" scheduledSendTime="2022-01-01T00:00:00.000Z" />
+        <Response subject="Hello, World!" response='sample response' priority="high" scheduledSendTime="2022-01-01T00:00:00.000Z" />
       </IonContent>  
     </IonPage>
   );

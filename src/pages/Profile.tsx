@@ -1,11 +1,17 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { useParams } from 'react-router';
+import { Redirect } from 'react-router';
 import ExploreContainer from '../components/ExploreContainer';
 import './Profile.css';
+import { auth } from '../firebase/firebase';
 
 const Profile: React.FC = () => {
 
   const name = "Profile";
+
+  
+  if (!auth.currentUser) {
+    return <Redirect to="/login" />;
+  }
 
   return (
     <IonPage>

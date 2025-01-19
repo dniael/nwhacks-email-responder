@@ -4,6 +4,8 @@ import { Redirect, Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -34,29 +36,58 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { auth } from './firebase/firebase';
+import { useEffect, useState } from 'react';
 
 setupIonicReact();
 
 const App: React.FC = () => {
+
+  const [user, setUser] = useState<any>(null);
+  
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      console.log(user);
+      setUser(user);
+    });
+  }, []);
   return (
-    <IonApp>
-      <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <Menu />
-          <IonRouterOutlet id="main">
-            <Route path="/" exact={true}>
-              <Redirect to="/dashboard" />
-            </Route>
-            <Route path="/dashboard" exact={true}>
-              <Dashboard />
-            </Route>
-            <Route path="/profile" exact={true}>
-              <Profile />
-            </Route>
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
-    </IonApp>
+    <AuthProvider>
+      <IonApp>
+        <IonReactRouter>
+          {user ? (
+            <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              <Route path="/" exact={true}>
+                <Redirect to="/dashboard" />
+              </Route>
+              <Route path="/dashboard" exact={true}>
+                <Dashboard />
+              </Route>
+              <Route path="/profile" exact={true}>
+                <Profile />
+              </Route>
+            </IonRouterOutlet>
+          </IonSplitPane>
+          ) : (
+            <IonRouterOutlet>
+              <Route path="/login" exact={true}>
+                <Login />
+              </Route>
+              <Route path="/register" exact={true}>
+                <Register />
+              </Route>
+              <Route path="/" exact={true}>
+                <Redirect to="/login" />
+              </Route>
+            </IonRouterOutlet>
+          )}
+        </IonReactRouter>
+      </IonApp>     
+    </AuthProvider>
+
   );
 };
 

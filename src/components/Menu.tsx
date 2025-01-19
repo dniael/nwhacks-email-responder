@@ -9,12 +9,14 @@ import {
   IonMenuToggle,
   IonNote,
   IonMenuButton,
-  IonButtons
+  IonButtons,
+  IonButton
 } from '@ionic/react';
 
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { personOutline, analyticsOutline, analyticsSharp, personSharp, bookmarkOutline} from 'ionicons/icons';
 import './Menu.css';
+import { auth } from '../firebase/firebase';
 
 interface AppPage {
   url: string;
@@ -36,11 +38,18 @@ const appPages: AppPage[] = [
     iosIcon: personOutline, 
     mdIcon: personSharp
   }
-
 ];
 
 const Menu: React.FC = () => {
   const location = useLocation();
+
+  const history = useHistory();
+
+  const handleLogout = () => {
+    auth.signOut();
+    history.push('/login');
+    console.log('Logging out');
+  }
 
   return (
     <IonMenu contentId="main" type="overlay">
@@ -59,6 +68,7 @@ const Menu: React.FC = () => {
             );
           })}
         </IonList>
+        <IonButton expand="block" fill="clear" onClick={handleLogout}>Logout</IonButton>
       </IonContent>
     </IonMenu>
   );

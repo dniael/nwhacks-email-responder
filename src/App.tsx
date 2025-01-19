@@ -1,6 +1,6 @@
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import Menu from './components/Menu';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
@@ -60,28 +60,38 @@ const App: React.FC = () => {
             <IonSplitPane contentId="main">
             <Menu />
             <IonRouterOutlet id="main">
-              <Route path="/" exact={true}>
-                <Redirect to="/dashboard" />
-              </Route>
-              <Route path="/dashboard" exact={true}>
-                <Dashboard />
-              </Route>
-              <Route path="/profile" exact={true}>
-                <Profile />
-              </Route>
+              <Switch>
+                <Route path="/" exact={true}>
+                  <Redirect to="/dashboard" />
+                </Route>
+                <Route path="/dashboard" exact={true}>
+                  <Dashboard />
+                </Route>
+                <Route path="/profile" exact={true}>
+                  <Profile />
+                </Route>
+                <Route path="*" exact={true}>
+                  <Redirect to="/dashboard" />
+                </Route>
+              </Switch>
             </IonRouterOutlet>
           </IonSplitPane>
           ) : (
             <IonRouterOutlet>
-              <Route path="/login" exact={true}>
-                <Login />
-              </Route>
-              <Route path="/register" exact={true}>
-                <Register />
-              </Route>
-              <Route path="/" exact={true}>
-                <Redirect to="/login" />
-              </Route>
+              <Switch>
+                <Route path="/login" exact={true}>
+                  <Login />
+                </Route>
+                <Route path="/register" exact={true}>
+                  <Register />
+                </Route>
+                <Route path="/" exact={true}>
+                  <Redirect to="/login" />
+                </Route>
+                <Route path="*">
+                  <Redirect to="/login" />
+                </Route>
+              </Switch>
             </IonRouterOutlet>
           )}
         </IonReactRouter>

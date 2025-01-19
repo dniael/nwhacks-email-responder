@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonInput, IonButton, IonItem, IonLabel, IonText } from '@ionic/react';
 import { db } from '../firebase/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { auth, googleProvider } from '../firebase/firebase';
@@ -18,13 +18,12 @@ const Register: React.FC = () => {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       const user = result.user;
 
-      // Add user data to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        createdAt: new Date()
-      });
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc) {
+        saveUser(user);
+      }
     } catch (error) {
       console.error('Failed to register', error);
     }
@@ -35,19 +34,26 @@ const Register: React.FC = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      if (result.user) {
-        await setDoc(doc(db, 'users', user.uid), {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            createdAt: new Date()
-          });
-        history.push('/dashboard');
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc) {
+        saveUser(user);
       }
     } catch (error) {
       console.error('Failed to login', error);
     }
    }
+
+   const saveUser = async (user: any) => {
+        await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            createdAt: new Date()
+        });
+        history.push('/dashboard');
+ }
 
   return (
     <IonPage style={ {display: 'flex', justifyContent: 'center', alignItems: 'center', top: '20%'} }>

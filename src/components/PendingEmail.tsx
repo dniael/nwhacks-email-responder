@@ -57,7 +57,7 @@ const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority
         <IonDatetime id="datetime" value={scheduledSendTime}></IonDatetime>
       </IonModal>
 
-      <IonText style={{ minWidth: '100px', maxWidth: '100px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}></IonText>
+      <IonText style={{ minWidth: '100px', maxWidth: '100px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: 'lightgray' }}>{shortSummary}</IonText>
       <IonButton onClick={handleSend}>Send</IonButton>
     </IonItem>
   );

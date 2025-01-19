@@ -46,7 +46,7 @@ const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority
 
   return (
     <IonItem>  
-      <IonText style={{ minWidth: '100px', maxWidth: '100px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{subject}</IonText>
+      <IonText className="subject">{subject}</IonText>
       <IonIcon style={{ paddingLeft: '10px' }} icon={priorityData.icon} color={priorityData.color} /> 
       <IonText style={{ paddingLeft: '10px', minWidth: '150px', maxWidth: '150px' }} color={priorityData.color}>
         {priorityData.text}   
@@ -57,7 +57,7 @@ const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority
         <IonDatetime id="datetime" value={scheduledSendTime}></IonDatetime>
       </IonModal>
 
-      <IonText style={{ minWidth: '100px', maxWidth: '100px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: 'lightgray' }}>{shortSummary}</IonText>
+      <IonText className='shortSummary'>{shortSummary}</IonText>
       <IonButton onClick={handleSend}>Send</IonButton>
     </IonItem>
   );

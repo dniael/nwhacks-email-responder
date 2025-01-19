@@ -17,6 +17,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { personOutline, analyticsOutline, analyticsSharp, personSharp, bookmarkOutline} from 'ionicons/icons';
 import './Menu.css';
 import { auth } from '../firebase/firebase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AppPage {
   url: string;
@@ -51,12 +52,14 @@ const Menu: React.FC = () => {
     console.log('Logging out');
   }
 
+  const { currentUser } = useAuth();
+
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
         <IonList id="inbox-list">
           <IonListHeader>Inbox</IonListHeader>
-          <IonNote>hi@ionicframework.com</IonNote>
+          <IonNote>{currentUser.email}</IonNote>
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>

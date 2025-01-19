@@ -3,20 +3,20 @@ import { IonItem, IonLabel, IonText, IonButton, IonIcon, IonDatetimeButton, IonD
 import { alertCircleOutline, alertOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import './Response.css';
 
-interface ResponseProps {
+export interface ResponseProps {
   subject: string;
   shortSummary: string;
   priority: 1 | 2 | 3;
-  scheduledSendTime: string;
+  sentTime: string;
 }
 
-const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority, scheduledSendTime }: ResponseProps) => {
+const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority, sentTime }: ResponseProps) => {
 
   const handleSend = () => {
     // Handle the send action here
     console.log('Subject:', subject);
     console.log('Priority:', priority);
-    console.log('Scheduled Send Time:', scheduledSendTime);
+    console.log('Scheduled Send Time:', sentTime);
   };
 
   const getPriorityData = () => {
@@ -51,10 +51,10 @@ const PendingEmail: React.FC<ResponseProps> = ({ subject, shortSummary, priority
       <IonText style={{ paddingLeft: '10px', minWidth: '150px', maxWidth: '150px' }} color={priorityData.color}>
         {priorityData.text}   
       </IonText>
-      <IonDatetimeButton datetime="datetime" style={{ paddingLeft: '10px' }}></IonDatetimeButton>
+      <IonDatetimeButton datetime="datetime" style={{ paddingLeft: '10px' }} disabled></IonDatetimeButton>
 
       <IonModal keepContentsMounted={true}>
-        <IonDatetime id="datetime" value={scheduledSendTime}></IonDatetime>
+        <IonDatetime id="datetime" value={sentTime}></IonDatetime>
       </IonModal>
 
       <IonText className='shortSummary'>{shortSummary}</IonText>

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   IonItem, 
   IonLabel, 
   IonText, 
   IonButton, 
   IonIcon, 
-  IonDatetimeButton, 
-  IonDatetime, 
   IonModal,
   useIonToast,
   IonAlert,
@@ -17,12 +15,7 @@ import {
   IonInput,
   IonTextarea
 } from '@ionic/react';
-import { 
-  alertCircleOutline, 
-  alertOutline, 
-  checkmarkCircleOutline, 
-  mailOutline 
-} from 'ionicons/icons';
+import { mailOutline } from 'ionicons/icons';
 import { gmailService } from '../services/GmailService';
 import './Response.css';
 
@@ -41,8 +34,6 @@ const PendingEmail: React.FC = () => {
   // Form state
   const [subject, setSubject] = useState('');
   const [toEmail, setToEmail] = useState('');
-  const [priority, setPriority] = useState<1 | 2 | 3>(2);
-  const [scheduledSendTime, setScheduledSendTime] = useState(new Date().toISOString());
   const [responseContent, setResponseContent] = useState('');
 
   const authorize = async () => {
@@ -88,13 +79,7 @@ const PendingEmail: React.FC = () => {
     }
 
     try {
-      const formattedEmail = `
-Priority: ${getPriorityData().text}
-Scheduled Time: ${scheduledSendTime}
-
-${responseContent}`;
-
-      await gmailService.sendEmail(toEmail, subject, formattedEmail);
+      await gmailService.sendEmail(toEmail, subject, responseContent);
       
       presentToast({
         message: 'Email sent successfully!',
@@ -112,29 +97,6 @@ ${responseContent}`;
         duration: 3000,
         color: 'danger'
       });
-    }
-  };
-
-  const getPriorityData = () => {
-    switch (priority) {
-      case 1:
-        return {
-          color: 'danger',
-          icon: alertCircleOutline,
-          text: "High Priority"
-        }
-      case 2:
-        return {
-          color: 'warning',
-          icon: alertOutline,
-          text: "Medium Priority"
-        }
-      case 3:
-        return {
-          color: 'success',
-          icon: checkmarkCircleOutline,
-          text: "Low Priority"
-        }
     }
   };
 
@@ -199,31 +161,6 @@ ${responseContent}`;
                   onIonChange={e => setSubject(e.detail.value || '')}
                   placeholder="Enter subject"
                 />
-              </IonItem>
-
-              <IonItem>
-                <IonLabel position="stacked">Priority:</IonLabel>
-                <IonButton 
-                  fill="clear" 
-                  color={getPriorityData().color}
-                  onClick={() => setPriority(((priority % 3) + 1) as 1 | 2 | 3)}
-                >
-                  <IonIcon icon={getPriorityData().icon} slot="start" />
-                  {getPriorityData().text}
-                </IonButton>
-              </IonItem>
-
-              <IonItem>
-                <IonLabel position="stacked">Schedule Send:</IonLabel>
-      
-        <IonDatetimeButton datetime="datetime" className="ion-margin"/>
-                <IonModal keepContentsMounted={true}>
-                  <IonDatetime 
-                    id="datetime" 
-                    value={scheduledSendTime}
-                    onIonChange={e => setScheduledSendTime(Array.isArray(e.detail.value) ? e.detail.value[0] : e.detail.value || new Date().toISOString())}
-                  />
-                </IonModal>
               </IonItem>
 
               <IonItem>

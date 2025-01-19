@@ -40,7 +40,7 @@ const generateAIResponse = async (emailContent: { subject: string; from: string 
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: "You are a professional email assistant. Write concise, courteous responses." },
           { role: "user", content: prompt }

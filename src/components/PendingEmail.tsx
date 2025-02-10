@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import {
-  IonItem,
-  IonLabel,
-  IonText,
-  IonButton,
-  IonIcon,
-  IonDatetimeButton,
-  IonDatetime,
+import React, { useState } from 'react';
+import { 
+  IonItem, 
+  IonLabel, 
+  IonText, 
+  IonButton, 
+  IonIcon, 
   IonModal,
   useIonToast,
   IonAlert,
@@ -15,34 +13,66 @@ import {
   IonCard,
   IonCardContent,
   IonInput,
-  IonTextarea
+  IonTextarea,
+  IonRefresher,
+  IonRefresherContent,
+  IonSpinner
 } from '@ionic/react';
-import {
-  alertCircleOutline,
-  alertOutline,
-  checkmarkCircleOutline,
-  mailOutline
-} from 'ionicons/icons';
+import { mailOutline, refreshOutline } from 'ionicons/icons';
 import { gmailService } from '../services/GmailService';
-import './Response.css';
+import axios from 'axios';
 
 interface EmailData {
   from: string;
   subject: string;
 }
 
-const PendingEmail: React.FC = () => {
+//const OPENAI_API_KEY = "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"; // Move this to environment variables
+
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
+
+
+const generateAIResponse = async (emailContent: { subject: string; from: string }) => {
+  try {
+    const prompt = `Please write a professional response to an email with subject: "${emailContent.subject}" from: "${emailContent.from}".`;
+    
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: "You are a professional email assistant. Write concise, courteous responses." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 200,
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("Error generating AI response:", error);
+    throw new Error("Failed to generate AI response");
+  }
+};
+
+const EmailComponent: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [showAuthAlert, setShowAuthAlert] = useState(false);
   const [presentToast] = useIonToast();
   const [recentEmails, setRecentEmails] = useState<EmailData[]>([]);
   const [selectedEmail, setSelectedEmail] = useState<EmailData | null>(null);
-
-  // Form state
+  const [isLoading, setIsLoading] = useState(false);
+  
   const [subject, setSubject] = useState('');
   const [toEmail, setToEmail] = useState('');
-  const [priority, setPriority] = useState<1 | 2 | 3>(2);
-  const [scheduledSendTime, setScheduledSendTime] = useState(new Date().toISOString());
   const [responseContent, setResponseContent] = useState('');
 
   const authorize = async () => {
@@ -76,6 +106,40 @@ const PendingEmail: React.FC = () => {
       });
     }
   };
+
+  const handleRefresh = async (event: CustomEvent) => {
+    try {
+      await fetchRecentEmails();
+      presentToast({
+        message: 'Emails refreshed successfully',
+        duration: 2000,
+        color: 'success'
+      });
+    } finally {
+      event.detail.complete();
+    }
+  };
+
+  const handleEmailSelect = async (email: EmailData) => {
+    setSelectedEmail(email);
+    setSubject(`Re: ${email.subject}`);
+    setToEmail(email.from.replace(/.*<(.+)>/, '$1')); 
+    
+    setIsLoading(true);
+    try {
+      const aiResponse = await generateAIResponse(email);
+      setResponseContent(aiResponse); // Populate response content automatically
+    } catch (error) {
+      presentToast({
+        message: 'Failed to generate AI response',
+        duration: 2000,
+        color: 'danger'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSendEmail = async () => {
     if (!toEmail || !subject || !responseContent) {
       presentToast({
@@ -86,11 +150,8 @@ const PendingEmail: React.FC = () => {
       return;
     }
     try {
-      const formattedEmail = `
-Scheduled Time: ${scheduledSendTime}
-${responseContent}`;
-      await gmailService.sendEmail(toEmail, subject, formattedEmail);
-
+      await gmailService.sendEmail(toEmail, subject, responseContent);
+      
       presentToast({
         message: 'Email sent successfully!',
         duration: 2000,
@@ -100,6 +161,10 @@ ${responseContent}`;
       setSubject('');
       setToEmail('');
       setResponseContent('');
+      setSelectedEmail(null);
+      
+      // Refresh email list
+      await fetchRecentEmails();
     } catch (error) {
       presentToast({
         message: 'Failed to send email. Please try again.',
@@ -109,17 +174,15 @@ ${responseContent}`;
     }
   };
 
-  const handleEmailSelect = (email: EmailData) => {
-    setSelectedEmail(email);
-    setSubject(`Re: ${email.subject}`);
-    setToEmail(email.from.replace(/.*<(.+)>/, '$1')); // Extract email from "Name <email>" format
-  };
-
   return (
     <IonContent>
-      <IonButton
-        expand="block"
-        onClick={authorize}
+      <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+        <IonRefresherContent></IonRefresherContent>
+      </IonRefresher>
+
+      <IonButton 
+        expand="block" 
+        onClick={authorize} 
         disabled={isAuthorized}
         className="ion-margin"
       >
@@ -128,6 +191,15 @@ ${responseContent}`;
       </IonButton>
       {isAuthorized && (
         <>
+          <IonButton 
+            expand="block" 
+            onClick={fetchRecentEmails}
+            className="ion-margin"
+          >
+            <IonIcon slot="start" icon={refreshOutline} />
+            Refresh Emails
+          </IonButton>
+
           <IonCard className="ion-margin">
             <IonCardContent>
               <h2>Recent Emails</h2>
@@ -151,6 +223,13 @@ ${responseContent}`;
           <IonCard className="ion-margin">
             <IonCardContent>
               <h2>Compose Response</h2>
+              {isLoading && (
+                <div className="ion-text-center ion-padding">
+                  <IonSpinner />
+                  <p>Generating AI response...</p>
+                </div>
+              )}
+              
               <IonItem>
                 <IonLabel position="stacked">To:</IonLabel>
                 <IonInput
@@ -168,18 +247,7 @@ ${responseContent}`;
                   placeholder="Enter subject"
                 />
               </IonItem>
-              <IonItem>
-                <IonLabel position="stacked">Schedule Send:</IonLabel>
 
-                <IonDatetimeButton datetime="datetime" className="ion-margin" />
-                <IonModal keepContentsMounted={true}>
-                  <IonDatetime
-                    id="datetime"
-                    value={scheduledSendTime}
-                    onIonChange={e => setScheduledSendTime(Array.isArray(e.detail.value) ? e.detail.value[0] : e.detail.value || new Date().toISOString())}
-                  />
-                </IonModal>
-              </IonItem>
               <IonItem>
                 <IonLabel position="stacked">Response:</IonLabel>
                 <IonTextarea
@@ -193,6 +261,7 @@ ${responseContent}`;
                 expand="block"
                 className="ion-margin-top"
                 onClick={handleSendEmail}
+                disabled={isLoading}
               >
                 Send Response
               </IonButton>
@@ -223,4 +292,4 @@ ${responseContent}`;
 
 }
 
-export default PendingEmail;
+export default EmailComponent;

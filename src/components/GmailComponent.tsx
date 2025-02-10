@@ -1,14 +1,11 @@
-// src/components/GmailComponent.tsx
-
+// src/components / GmailComponent.tsx
 import React, { useState } from 'react';
 import { IonButton, IonContent, IonItem, IonLabel, IonList, useIonToast } from '@ionic/react';
 import { gmailService } from '../services/GmailService';
-
 const GmailComponent: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [emails, setEmails] = useState<Array<{ from: string; subject: string }>>([]);
   const [presentToast] = useIonToast();
-
   const handleAuth = async () => {
     try {
       await gmailService.handleAuth();
@@ -26,7 +23,6 @@ const GmailComponent: React.FC = () => {
       });
     }
   };
-
   const handleSignout = async () => {
     try {
       await gmailService.handleSignout();
@@ -45,7 +41,6 @@ const GmailComponent: React.FC = () => {
       });
     }
   };
-
   const handleReadEmails = async () => {
     try {
       const lastEmails = await gmailService.readLastNEmails(5);
@@ -58,7 +53,6 @@ const GmailComponent: React.FC = () => {
       });
     }
   };
-
   const handleSendEmail = async () => {
     try {
       await gmailService.sendEmail(
@@ -79,25 +73,20 @@ const GmailComponent: React.FC = () => {
       });
     }
   };
-
   return (
     <IonContent>
       <IonButton expand="block" onClick={handleAuth} disabled={isAuthorized}>
         {isAuthorized ? 'Authorized' : 'Authorize Gmail'}
       </IonButton>
-      
       <IonButton expand="block" onClick={handleSignout} disabled={!isAuthorized}>
         Sign Out
       </IonButton>
-
       <IonButton expand="block" onClick={handleReadEmails} disabled={!isAuthorized}>
         Read Last 5 Emails
       </IonButton>
-
       <IonButton expand="block" onClick={handleSendEmail} disabled={!isAuthorized}>
         Send Test Email
       </IonButton>
-
       {emails.length > 0 && (
         <IonList>
           {emails.map((email, index) => (
@@ -113,5 +102,4 @@ const GmailComponent: React.FC = () => {
     </IonContent>
   );
 };
-
 export default GmailComponent;

@@ -27,15 +27,18 @@ interface EmailData {
   subject: string;
 }
 
-//const OPENAI_API_KEY = "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"; // Move this to environment variables
-
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
-
+export interface ResponseProps {
+    subject: string;
+    shortSummary: string;
+    priority: number;
+    sentTime: string
+}
 
 const generateAIResponse = async (emailContent: { subject: string; from: string }) => {
   try {
-    const prompt = `Please write a professional response to an email with subject: "${emailContent.subject}" from: "${emailContent.from}".`;
+    const prompt = `Please write a professional response to an email with subject: "${emailContent.subject}" from: "${emailContent.from}". Do not include the subject in the reply back. Make sure there are no placeholders. Get the name of person from the context of email or do not write anything if name is not given in the email. Make sure email reply is according to the tone of the email recieved. Always include closing and opening salutations. DO NOT WRITE PLACEHOLDERS SUCH AS [YOUR NAME] in case name is not known.`;
     
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",

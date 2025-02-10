@@ -9,23 +9,27 @@ SmartReply AI is a web application that allows users to log in, store their data
 ## Features
 
 - **User Authentication**:
+
   - Secure login and registration using Firebase Authentication.
   - Support for email/password and Google Sign-In.
 
 - **Data Storage**:
+
   - Store user preferences, settings, and other data securely using Firebase Firestore.
 
 - **Gmail Integration**:
+
   - Connect to the Gmail API to fetch and display emails in a user-friendly dashboard.
   - View, sort, and filter emails by labels, categories, or keywords.
 
 - **AI-Powered Email Responses**:
-  - Use AI models (e.g., OpenAI GPT) to generate context-aware email responses.
+
+  - Use AI models to generate context-aware email responses.
   - Customize and send AI-generated replies directly from the dashboard.
 
 - **Dashboard**:
-  - Centralized view of all emails with quick actions (reply, archive, delete).
-  - Insights and analytics on email activity (e.g., response time, frequently contacted users).
+
+  - Centralized view of all emails with quick actions (reply, compose).
 
 - **Security**:
   - All data is encrypted and securely stored in Firebase.
@@ -35,12 +39,10 @@ SmartReply AI is a web application that allows users to log in, store their data
 
 ## Technologies Used
 
-- **Frontend**: React.js, Tailwind CSS (or any preferred frontend framework)
-- **Backend**: Node.js, Express.js (optional, depending on project requirements)
+- **Frontend**: React.js
 - **Database**: Firebase Firestore
-- **Authentication**: Firebase Authentication
-- **APIs**: Gmail API, OpenAI API (or similar AI service)
-- **Deployment**: Vercel, Netlify, or Firebase Hosting
+- **Authentication**: Firebase Authentication, OAuth 2.0
+- **APIs**: Gmail API, OpenAI API
 
 ---
 

@@ -54,11 +54,3 @@ Before running the project, ensure you have the following:
 4. An **API key** from an AI service like OpenAI for generating email responses.
 
 ---
-
-## Setup Instructions
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/smart-email-assistant.git
-cd smart-email-assistant
-```
